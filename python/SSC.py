@@ -53,7 +53,7 @@ def SSC(Y,rho,alpha_z,alpha_e,maxIter,eps=1e-4):
     #These are some repetitive computations used inside the loop
     one_one_T = np.matmul(np.ones((N,1)),np.ones((1,N)))
     one_matrix = np.ones((N,N))
-    left = lam_z * (yty + rho * np.eye(N) + rho * one_one_T)
+    left = lam_z * (np.matmul(Y.T,Y)) + rho * np.eye(N) + rho * one_one_T
 
     for kk in range(maxIter):
         E_prev = E
