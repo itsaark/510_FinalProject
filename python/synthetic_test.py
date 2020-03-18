@@ -2,6 +2,7 @@ from sklearn.datasets.samples_generator import make_blobs
 import matplotlib.pyplot as plt
 import seaborn as sns
 from SSC import SSC
+
 #Generating synthetic data
 centers = [(-10, -6), (7, 7)]
 cluster_std = [0.8, 1]

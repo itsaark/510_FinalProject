@@ -48,7 +48,7 @@ def SSC(Y,rho,alpha_z,alpha_e,maxIter,eps=1e-4):
     yty = np.matmul(Y.T,Y)
     yty = np.abs(yty - np.diag(np.diag(yty)))
     lam_z = alpha_z/np.min(np.max(yty))
-    lam_e = np.min(lin.norm(Y,axis=1)) #as per John's suggestion
+    lam_e = np.min(lin.norm(Y,axis=1,ord=1)) #as per John's suggestion
 
     #These are some repetitive computations used inside the loop
     one_one_T = np.matmul(np.ones((N,1)),np.ones((1,N)))
