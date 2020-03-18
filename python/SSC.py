@@ -30,8 +30,8 @@ def SSC(Y,rho,alpha_z,alpha_e,maxIter,eps=1e-4):
     -------
         Y: data matrix of size D x N
         rho: Objective function parameter, value > 0
-        alpha_z: Balencing term for Z, value > 1
-        alpha_e: Balencing term for E, value > 1
+        alpha_z: Balancing term for Z, value > 1
+        alpha_e: Balancing term for E, value > 1
         maxIter: Total number of iterations
         eps: Error tolerance, 1e-4 recommended
     Outputs:
