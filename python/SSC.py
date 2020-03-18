@@ -23,7 +23,7 @@ def Tau(v, eta):
     """
     return np.maximum(0,np.abs(v) - (eta * np.ones_like(v))) * np.sign(v)
 
-def SSC(Y,rho,alpha_z,alpha_e,maxIter,eps=1e-4):
+def SSC(Y,rho,alpha_z,alpha_e,maxIter,eps=2e-4):
     r"""
 
     Inputs:
@@ -33,7 +33,7 @@ def SSC(Y,rho,alpha_z,alpha_e,maxIter,eps=1e-4):
         alpha_z: Balancing term for Z, value > 1
         alpha_e: Balancing term for E, value > 1
         maxIter: Total number of iterations
-        eps: Error tolerance, 1e-4 recommended
+        eps: Error tolerance, 2e-4 recommended
     Outputs:
     -------
         C: Optimal sparse coefficient matrix of size N x N
@@ -48,7 +48,7 @@ def SSC(Y,rho,alpha_z,alpha_e,maxIter,eps=1e-4):
     yty = np.matmul(Y.T,Y)
     yty = np.abs(yty - np.diag(np.diag(yty)))
     lam_z = alpha_z/np.min(np.max(yty))
-    lam_e = np.min(lin.norm(Y,axis=0,ord=1)) #as per John's suggestion
+    lam_e = np.min(lin.norm(Y,axis=1,ord=1)) #as per John's suggestion
 
     #These are some repetitive computations used inside the loop
     one_one_T = np.matmul(np.ones((N,1)),np.ones((1,N)))
