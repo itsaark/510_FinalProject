@@ -73,7 +73,7 @@ def SSC(Y,rho,alpha_z,alpha_e,maxIter,eps=1e-4):
         E = Tau(v,lam_e/lam_z)
 
         #Updating delta
-        delta = delta + rho * (np.matmul(A.T,one_matrix) - one_matrix)
+        delta = delta + rho * (np.matmul(A.T,np.ones((N,1))) - np.ones((N,1)))
 
         #Updating Delta
         Delta = Delta + rho * (A - C)
