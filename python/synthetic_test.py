@@ -1,28 +1,54 @@
 from sklearn.datasets.samples_generator import make_blobs
+from sklearn.metrics import accuracy_score
 import matplotlib.pyplot as plt
+import helperFunctions as hf
 from mpl_toolkits.mplot3d import Axes3D
+from SpectralClustering import SpectralClustering
 import numpy as np
 import seaborn as sns
 from SSC import SSC
 
-#Generating synthetic data
-D = 3 #Ambient space dimention
-d1 = 1
-d2 = 1
-N1 = 20
-N2 = 20
+D = 2
+N = 400
+K = 2
+trueLabels = np.append(np.ones([int(N/2), 1]), 2 * np.ones([int(N/2), 1])).reshape(N,1)
 
-X1 = np.random.randn(D,d1) @ np.random.randn(d1,N1)
-X2 = np.random.randn(D,d2) @ np.random.randn(d2,N2)
+var = 0.001
 
-d3 = 2
-N3 = 50
-X3 = np.random.randn(D,d3) @ np.random.randn(d3,N3)
+# cluster 1
+X1 = np.random.randn(D, int(N/2))
+X1 = X1 / np.tile(np.sqrt(sum(X1**2)), (D,1))
+X1 = X1 + np.tile(np.sqrt(var) * np.random.randn(1, int(N/2)), (D,1))
 
-X = np.vstack([X1.T,X2.T,X3.T])
-C = SSC(X.T,800,800,800,200)
-error = np.linalg.norm(X - (np.matmul(X.T,C)).T)
-print("error is, ", error)
+# cluster 2
+X2 = np.random.randn(D, int(N/2))
+X2 = 2*X2 / np.tile(np.sqrt(sum(X2**2)), (D,1))
+X2 = X2 + np.tile(np.sqrt(var) * np.random.randn(1, int(N/2)), (D,1))
+
+X = np.append(X1, X2, axis=1)
+
+nNeighbors = 20
+wtype = 'constant'
+sigma = 1
+W = hf.myKNN(X, nNeighbors, wtype, sigma)
+
+#apply spectral clustering
+C = SSC(X,800,800,800,200)
+#print(np.linalg.norm(W - C))
+estLabels, Y = SpectralClustering(C, K, 1)
+scErrUn, UnestLabels_SP = hf.missRate(trueLabels, estLabels)
+print(f"Spectral Clustering error (unnormalized): {scErrUn}")
+
+# estLabels, Y = SpectralClustering(W, K, 1)
+# scErr, estLabels_SP = hf.missRate(trueLabels, estLabels)
+# print(f"Spectral Clustering error (normalized): {scErr}")
+#
+# #look at the data in the transformed space
+# plt.figure(figsize=(6,6))
+# plt.scatter(Y[0, 0:int(N/2)], Y[1, 0:int(N/2)], marker='X')
+# plt.scatter(Y[0, int(N/2):N], Y[1, int(N/2):N], marker='X')
+# plt.title("Transformed Data")
+# plt.show()
 
 
 

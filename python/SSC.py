@@ -48,23 +48,24 @@ def SSC(Y,rho,alpha_z,alpha_e,maxIter,eps=2e-4):
     yty = np.matmul(Y.T,Y)
     yty = np.abs(yty - np.diag(np.diag(yty)))
     lam_z = alpha_z/np.min(np.max(yty))
-    lam_e = np.min(lin.norm(Y,axis=1,ord=1)) #as per John's suggestion
+    lam_e = alpha_e/np.min(lin.norm(Y,ord=1,axis=1)) #as per John's suggestion
 
     #These are some repetitive computations used inside the loop
-    one_one_T = np.matmul(np.ones((N,1)),np.ones((1,N)))
+    one_one_T = np.ones((N,N))
     one_matrix = np.ones((N,N))
     left = lam_z * (np.matmul(Y.T,Y)) + rho * np.eye(N) + rho * one_one_T
-
+    yty = np.matmul(Y.T,Y)
     for kk in range(maxIter):
         E_prev = E
         A_prev = A
         #Updating A using CG solver
-        right =  lam_z * np.matmul(Y.T,(Y - E)) + rho * (one_one_T + C) - np.matmul(np.ones((N,1)),delta.T) - Delta
+        #right =  lam_z * np.matmul(Y.T,(Y - E)) + rho * (one_one_T + C) - np.matmul(np.ones((N,1)),delta.T) - Delta
+        right = lam_z*yty + rho * (C - Delta*(1/rho)) + rho * (np.matmul(np.ones((N,1)),(np.ones((1,N)) - delta.T*(1/rho))))
         for  i in range(len(right)):
             A[:,i] = sp.sparse.linalg.cgs(left,right[:,i])[0]
 
         #Updating C
-        v = A + Delta * (1/rho)
+        v = A + (Delta * (1/rho))
         J = Tau(v, 1/rho)
         C = J - np.diag(np.diag(J))
 
@@ -73,7 +74,7 @@ def SSC(Y,rho,alpha_z,alpha_e,maxIter,eps=2e-4):
         E = Tau(v,lam_e/lam_z)
 
         #Updating delta
-        delta = delta + rho * (np.matmul(A.T,np.ones((N,1))) - np.ones((N,1)))
+        delta = delta + rho * (np.matmul(A.T,np.ones((N,1))) - 1)
 
         #Updating Delta
         Delta = Delta + rho * (A - C)
