@@ -2,7 +2,7 @@
 % E. Elhamifar and R. Vidal, “Sparse subspace clustering..."
 % Algorithm 2 for sparse coefficient matrix
 
-function C = sparseADMM(Y,alpha= 800,maxIter = 200, eps=2e-4)
+function C = sparseADMM(Y,alpha= 800, rho = 800, maxIter = 200, eps=2e-4)
 %------------------------------------------------------------------
 %Referencing http://khoury.neu.edu/home/eelhami/codes.htm
 % This function takes a DxN matrix of N data points in a D-dimensional 
@@ -27,10 +27,10 @@ elseif (length(alpha) == 2)
     alp_z = alpha(2);
 end
 
-rho = alp_e;
+%rho = alp_e;
 
 YtY = Y'*Y;
-mu_e = min(max(Y,[],1));
+mu_e = min(max(abs(Y),[],1));
 mu_z = min(max(abs(YtY - diag(diag(YtY))),[],2)); %max each row
 
 lam_e = alp_e / mu_e;
@@ -50,9 +50,9 @@ for i = 1:1:maxIter
     A_prev = A;
 
    %update A
-   %A = inv(c1)*(lam_z * (YtY - Y'*E) + rho*(ones(N,N) + C) - ones(N,1)*d' - Delta); %doesn't work (also don't use / to solve)
+   %A = inv(c1)*(lam_z * (YtY - Y'*E) + rho*(ones(N,N) + C) - ones(N,1)*d' - Delta); %Paper code
    
-   A = inv(c1)* (lam_z*(YtY)+rho*(C-Delta/rho)+rho*ones(N,1)*(ones(1,N)-d'/rho));
+   A = inv(c1)* (lam_z*(YtY)+rho*(C-Delta/rho)+rho*ones(N,1)*(ones(1,N)-d'/rho)); %(updated? authors code, slightly better)
    
    %update C
    C = shrinkThresh(A+Delta/rho, 1/rho);
